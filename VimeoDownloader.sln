@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.489
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VimeoDownloader", "VimeoDownloader\VimeoDownloader.csproj", "{B8B4C904-81BA-47B9-B720-B01BD8BC5814}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VimeoDownloader.Sample", "VimeoDownloader.Sample\VimeoDownloader.Sample.csproj", "{E17CD246-C1DF-4BF0-B421-DEFE87D52E16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VimeoDownloader.Tests", "VimeoDownloader.Tests\VimeoDownloader.Tests.csproj", "{1C303A03-6442-4FA5-B86E-3BD2772476B4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8B4C904-81BA-47B9-B720-B01BD8BC5814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8B4C904-81BA-47B9-B720-B01BD8BC5814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8B4C904-81BA-47B9-B720-B01BD8BC5814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8B4C904-81BA-47B9-B720-B01BD8BC5814}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E17CD246-C1DF-4BF0-B421-DEFE87D52E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E17CD246-C1DF-4BF0-B421-DEFE87D52E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E17CD246-C1DF-4BF0-B421-DEFE87D52E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E17CD246-C1DF-4BF0-B421-DEFE87D52E16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C303A03-6442-4FA5-B86E-3BD2772476B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C303A03-6442-4FA5-B86E-3BD2772476B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C303A03-6442-4FA5-B86E-3BD2772476B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C303A03-6442-4FA5-B86E-3BD2772476B4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CAF8A24E-5F7A-4E60-82D0-7E7D735D1D57}
+	EndGlobalSection
+EndGlobal
