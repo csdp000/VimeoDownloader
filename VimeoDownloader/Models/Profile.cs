@@ -32,10 +32,14 @@ namespace VimeoDownloader.Models
         /// 동영상 품질
         /// </summary>
         public string Quality { get; set; }
+        /// <summary>
+        /// 동영상 파일 크기
+        /// </summary>
+        public long? Length { get; set; }
 
         public override string ToString()
         {
-            return $"Url: {Url}{Environment.NewLine}Width: {Width}{Environment.NewLine}Height: {Height}{Environment.NewLine}Fps: {Fps}{Environment.NewLine}Mime: {Mime}{Environment.NewLine}Quality: {Quality}{Environment.NewLine}";
+            return $"Url: {Url}{Environment.NewLine}Width: {Width}{Environment.NewLine}Height: {Height}{Environment.NewLine}File Length: {Length}{Environment.NewLine}Fps: {Fps}{Environment.NewLine}Mime: {Mime}{Environment.NewLine}Quality: {Quality}{Environment.NewLine}";
         }
     }
 }

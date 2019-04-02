@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VimeoDownloader.Sample", "V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VimeoDownloader.Tests", "VimeoDownloader.Tests\VimeoDownloader.Tests.csproj", "{1C303A03-6442-4FA5-B86E-3BD2772476B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VimeoDownloaderConsole", "VimeoDownloaderConsole\VimeoDownloaderConsole.csproj", "{214EFE43-108E-460E-B967-9CBB1D6A71EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1C303A03-6442-4FA5-B86E-3BD2772476B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C303A03-6442-4FA5-B86E-3BD2772476B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C303A03-6442-4FA5-B86E-3BD2772476B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{214EFE43-108E-460E-B967-9CBB1D6A71EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{214EFE43-108E-460E-B967-9CBB1D6A71EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{214EFE43-108E-460E-B967-9CBB1D6A71EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{214EFE43-108E-460E-B967-9CBB1D6A71EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
