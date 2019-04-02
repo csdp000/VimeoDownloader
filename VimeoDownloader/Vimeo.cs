@@ -15,13 +15,22 @@ namespace VimeoDownloader
 {
     public class Vimeo
     {
+        public EventHandler DownloadStarted;
+        public EventHandler DownloadCancel;
+        public EventHandler DownloadFinished;
+        public EventHandler<ProgressEventArgs> DownloadProgress;
 
-        public async Task<Video> GetVideoInfo(string videoId)
+        public async void Download()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<VimeoInfo> GetVideoInfo(string videoId)
         {
             if (string.IsNullOrEmpty(videoId))
                 throw new ArgumentNullException("videoId");
 
-            Video vimeo = null;
+            VimeoInfo vimeoInfo = null;
 
             try
             {
@@ -31,16 +40,20 @@ namespace VimeoDownloader
 
                     var jobj = JObject.Parse(body);
 
-                    vimeo = jobj["video"].ToObject<Video>();
-                    vimeo.Thumb = jobj["video"]["thumbs"]["base"]?.ToString();
-                    vimeo.Profiles = jobj["request"]["files"]["progressive"].ToObject<Profile[]>();
+                    vimeoInfo = jobj["video"].ToObject<VimeoInfo>();
+                    vimeoInfo.Thumb = jobj["video"]["thumbs"]["base"]?.ToString();
+                    vimeoInfo.Profiles = jobj["request"]["files"]["progressive"].ToObject<Profile[]>();
+#if DEBUG
+                    Console.WriteLine(vimeoInfo);
+#endif
+
                 }
             }
             catch(Exception ex)
             {
                 throw new VimeoParseException(videoId, ex);
             }
-            return vimeo;
+            return vimeoInfo;
         }
     }
 }

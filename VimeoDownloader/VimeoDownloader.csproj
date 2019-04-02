@@ -44,9 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\VideoQuality.cs" />
+    <Compile Include="Exceptions\VimeoException.cs" />
     <Compile Include="Exceptions\VimeoParseException.cs" />
     <Compile Include="Models\Profile.cs" />
-    <Compile Include="Models\Video.cs" />
+    <Compile Include="Models\VimeoInfo.cs" />
+    <Compile Include="ProgressEventArgs.cs" />
     <Compile Include="UrlHelper.cs" />
     <Compile Include="Vimeo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
