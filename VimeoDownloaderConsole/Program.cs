@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using VimeoDownloader;
 using VimeoDownloader.Enums;
 using VimeoDownloader.Models;
-using System.IO;
-
+using System.IO; 
 namespace VimeoDownloaderConsole
 {
     class Program
@@ -23,13 +22,19 @@ namespace VimeoDownloaderConsole
                 Console.WriteLine(vInfo);
             }
             var profile = vimeoInfo.GetProfile(VideoQuality.High);
+            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
 
             Console.WriteLine($"High Quality: {Environment.NewLine}{profile}");
             vimeo.DownloadProgress += (sedner, arg) =>
             { 
                 Console.WriteLine($"{arg.WriteBytes} / {arg.TotalBytes}  ({ (arg.WriteBytes*1.0/arg.TotalBytes)*100 })%)");
             };
-            await vimeo.Download(Directory.GetCurrentDirectory(), vimeoInfo,VideoQuality.High); 
+            await vimeo.Download(Directory.GetCurrentDirectory(), vimeoInfo,VideoQuality.High);
+            (await vimeo.GetThumbnail(vimeoInfo)).Save($"{Directory.GetCurrentDirectory()}\\image.jpg");
+            watch.Stop();
+
+            System.Console.WriteLine(watch.ElapsedMilliseconds + "ms");
             Console.ReadKey();
         }
          

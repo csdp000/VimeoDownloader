@@ -6,21 +6,33 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq; 
 using System.Net;
 using System.IO;
-using VimeoDownloader.Models;
-using VimeoDownloader.Exceptions;
-using VimeoDownloader.Enums; 
+using System.Drawing;
 using System.Net.Http;
 
+using VimeoDownloader.Models;
+using VimeoDownloader.Exceptions;
+using VimeoDownloader.Enums;  
 namespace VimeoDownloader
 {
     public class Vimeo
     {
+        /// <summary>
+        /// 동영상 다운로드 시작 이벤트
+        /// </summary>
         public event EventHandler DownloadStarted;
+        /// <summary>
+        /// 동영상 다운로드 취소 이벤트
+        /// </summary>
         public event EventHandler DownloadCancel;
+        /// <summary>
+        /// 동영상 다운로드 완료 이벤트
+        /// </summary>
         public event EventHandler DownloadFinished;
+        /// <summary>
+        /// 동영상 다운로드 진행 이벤트
+        /// </summary>
         public event EventHandler<ProgressEventArgs> DownloadProgress; 
-        public string DownloadPath { get; set; }
-
+          
         /// <summary>
         /// 동영상을 다운로드 (파일 이름을 동영상 제목으로 지정)
         /// </summary>
@@ -47,7 +59,14 @@ namespace VimeoDownloader
         /// <param name="fileName">확장자를 제외한 파일이름</param>
         /// <returns></returns>
         public async Task Download(string path, VimeoInfo vimeoInfo,VideoQuality quality,string fileName)
-        { 
+        {
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentNullException("path");
+            if (vimeoInfo == null)
+                throw new ArgumentNullException("vimeoInfo");
+            if (string.IsNullOrEmpty(fileName))
+                throw new ArgumentNullException("fileName");
+
             string saveFile = $@"{path}\{fileName}{MimeType.GetExtension(vimeoInfo.GetProfile(VideoQuality.High).Mime)}";
 
             var profile = vimeoInfo.GetProfile(quality);
@@ -67,18 +86,67 @@ namespace VimeoDownloader
                 {
                     writeBytes += bytes; 
                     writer.Write(buffer, 0, bytes); 
-                    DownloadProgress?.Invoke(this, new ProgressEventArgs(this, writeBytes, (long)profile.Length));
-
+                    DownloadProgress?.Invoke(this, new ProgressEventArgs(this, writeBytes, profile.Length)); 
                 }
-            }
+            } 
+        }
+        /// <summary>
+        /// 동영상 다운로드 읽기스트림을 반환합니다.
+        /// </summary>
+        /// <param name="vimeoInfo">VimeoInfo 객체</param>
+        /// <returns>읽기 스트림 반환</returns>
+        public async Task<Stream> GetStream(VimeoInfo vimeoInfo) { return await GetStream(vimeoInfo, VideoQuality.High); }
 
-            Console.WriteLine(saveFile);
-        }
-        public Stream GetStream()
+        /// <summary>
+        /// 동영상 다운로드 읽기스트림을 반환합니다.
+        /// </summary>
+        /// <param name="vimeoInfo">VimeoInfo 객체</param>
+        /// <param name="quality">동영상 품질</param>
+        /// <returns>읽기 스트림 반환</returns>
+        public async Task<Stream> GetStream(VimeoInfo vimeoInfo, VideoQuality quality)
         {
-            throw new NotImplementedException(); 
+            if (vimeoInfo == null)
+                throw new ArgumentNullException("vimeoInfo");
+
+            var profile = vimeoInfo.GetProfile(quality);
+
+            HttpClient client = new HttpClient(); 
+            var response = await client.GetAsync(profile.Url);
+
+            return await response.Content.ReadAsStreamAsync();
         }
-         
+
+        /// <summary>
+        /// 동영상 썸네일 이미지를 Image 객체로 반환합니다.
+        /// </summary>
+        /// <param name="vimeoInfo">VimeoInfo 객체</param>
+        /// <returns>Image 객체 반환</returns>
+        public async Task<Image> GetThumbnail(VimeoInfo vimeoInfo)
+        {
+            if (vimeoInfo == null)
+                throw new ArgumentNullException("vimeoInfo");
+
+            Image image = null;
+
+            try
+            {
+                HttpClient client = new HttpClient();
+                var response = await client.GetAsync(vimeoInfo.Thumb);
+
+                image = Image.FromStream(await response.Content.ReadAsStreamAsync());
+            }
+            catch(Exception ex)
+            {
+                throw new VimeoException("Thumbnail Image Download Error", ex);
+            }
+            return image;
+        }
+
+        /// <summary>
+        /// 동영상 정보를 구합니다.
+        /// </summary>
+        /// <param name="videoId">비메오 동영상 Id</param>
+        /// <returns>VimeoInfo 객체 반환</returns>
         public static async Task<VimeoInfo> GetVimeoInfo(string videoId)
         {
             if (string.IsNullOrEmpty(videoId))
@@ -108,10 +176,10 @@ namespace VimeoDownloader
                         var message = new HttpRequestMessage(HttpMethod.Head, profile.Url);
                         using (var response = await request.SendAsync(message))
                         {
-                            profile.Length = response.Content.Headers.ContentLength;
+                            profile.Length = response.Content.Headers.ContentLength ?? -1; 
                         } 
-                    }
-                }
+                    } 
+                } 
             }
             catch(Exception ex)
             {

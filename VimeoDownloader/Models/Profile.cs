@@ -35,7 +35,7 @@ namespace VimeoDownloader.Models
         /// <summary>
         /// 동영상 파일 크기
         /// </summary>
-        public long? Length { get; set; }
+        public long Length { get; set; }
 
         public override string ToString()
         {
