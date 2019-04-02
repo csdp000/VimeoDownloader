@@ -20,14 +20,17 @@ namespace VimeoDownloader
         /// 동영상 다운로드 시작 이벤트
         /// </summary>
         public event EventHandler DownloadStarted;
+        
         /// <summary>
         /// 동영상 다운로드 취소 이벤트
         /// </summary>
         public event EventHandler DownloadCancel;
+        
         /// <summary>
         /// 동영상 다운로드 완료 이벤트
         /// </summary>
         public event EventHandler DownloadFinished;
+        
         /// <summary>
         /// 동영상 다운로드 진행 이벤트
         /// </summary>
@@ -90,6 +93,7 @@ namespace VimeoDownloader
                 }
             } 
         }
+
         /// <summary>
         /// 동영상 다운로드 읽기스트림을 반환합니다.
         /// </summary>
@@ -119,10 +123,18 @@ namespace VimeoDownloader
         /// <summary>
         /// 동영상 썸네일 이미지를 Image 객체로 반환합니다.
         /// </summary>
+        /// <param name="vimeoInfo">VimeoInfo 객체</param> 
+        /// <returns>Image 객체 반환</returns> 
+        public async Task<Image> GetThumbnail(VimeoInfo vimeoInfo) { return await GetThumbnail(vimeoInfo, ThumbnailQuality.Low); }
+
+        /// <summary>
+        /// 동영상 썸네일 이미지를 Image 객체로 반환합니다.
+        /// </summary>
         /// <param name="vimeoInfo">VimeoInfo 객체</param>
-        /// <returns>Image 객체 반환</returns>
-        public async Task<Image> GetThumbnail(VimeoInfo vimeoInfo)
-        {
+        /// <param name="quality">썸네일 품질</param>
+        /// <returns>Image 객체 반환</returns> 
+        public async Task<Image> GetThumbnail(VimeoInfo vimeoInfo,ThumbnailQuality quality)
+        { 
             if (vimeoInfo == null)
                 throw new ArgumentNullException("vimeoInfo");
 
@@ -130,15 +142,17 @@ namespace VimeoDownloader
 
             try
             {
+                var thumb =  vimeoInfo.GetThumbnail(quality);
+
                 HttpClient client = new HttpClient();
-                var response = await client.GetAsync(vimeoInfo.Thumb);
+                var response = await client.GetAsync(thumb.Url);
 
                 image = Image.FromStream(await response.Content.ReadAsStreamAsync());
             }
             catch(Exception ex)
             {
                 throw new VimeoException("Thumbnail Image Download Error", ex);
-            }
+            } 
             return image;
         }
 
@@ -162,11 +176,19 @@ namespace VimeoDownloader
 
                     var jobj = JObject.Parse(body);
 
-                    vimeoInfo = jobj["video"].ToObject<VimeoInfo>();
-                    vimeoInfo.Thumb = jobj["video"]["thumbs"]["base"]?.ToString();
+                    vimeoInfo = jobj["video"].ToObject<VimeoInfo>(); 
                     vimeoInfo.Profiles = jobj["request"]["files"]["progressive"].ToObject<Profile[]>();
+                     
 
+                    var thumbnailList = new List<KeyValuePair<string, string>>();
+                    foreach(var kvp in jobj["video"]["thumbs"].ToObject<JObject>()) 
+                        thumbnailList.Add(new KeyValuePair<string, string>(kvp.Key,kvp.Value.ToString()));
+
+                    //썸네일 리스트
+                    vimeoInfo.Thumbnail = thumbnailList.Select((x) => new Thumbnail { Url = x.Value, Resolution = x.Key }).ToArray();
+                     
                     vimeoInfo.Title = MimeType.MakeValidFileName(vimeoInfo.Title);
+
                     //내림차순 정렬
                     Array.Sort(vimeoInfo.Profiles, (x, y) => y.Height.CompareTo(x.Height));
 

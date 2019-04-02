@@ -20,7 +20,7 @@ namespace VimeoDownloader.Tests
         public  void GetVideoInfo_ReturnVideoMetaData()
         { 
             Assert.AreNotEqual(0, videoInfo.Id);
-            Assert.AreNotEqual(0, videoInfo.Thumb);
+            Assert.AreNotEqual(0, videoInfo.Thumbnail.Length);
             Assert.AreNotEqual(0, videoInfo.Profiles.Length);
         } 
         [TestMethod()]

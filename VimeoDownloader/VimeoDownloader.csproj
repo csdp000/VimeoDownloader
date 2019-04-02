@@ -45,11 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\ThumbnailQuality.cs" />
     <Compile Include="Enums\VideoQuality.cs" />
     <Compile Include="Exceptions\VimeoException.cs" />
     <Compile Include="Exceptions\VimeoParseException.cs" />
     <Compile Include="MimeType.cs" />
     <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\Thumbnail.cs" />
     <Compile Include="Models\VimeoInfo.cs" />
     <Compile Include="ProgressEventArgs.cs" />
     <Compile Include="UrlHelper.cs" />

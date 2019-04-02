@@ -6,37 +6,63 @@ using System.Threading.Tasks;
 using VimeoDownloader;
 using VimeoDownloader.Enums;
 using VimeoDownloader.Models;
+using VimeoDownloader.Exceptions;
 using System.IO; 
+
 namespace VimeoDownloaderConsole
 {
+
+    using static System.Console;
     class Program
-    {
+    { 
         static async Task Main(string[] args)
         {
-            string videoId = "308518479";
-
             Vimeo vimeo = new Vimeo();
-            var vimeoInfo = await Vimeo.GetVimeoInfo(videoId); 
-            foreach (var vInfo in vimeoInfo.Profiles)
+
+            string dir = Directory.GetCurrentDirectory();
+
+            while (true)
             {
-                Console.WriteLine(vInfo);
-            }
-            var profile = vimeoInfo.GetProfile(VideoQuality.High);
-            System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
+                WriteLine("Input Video ID : ");
+                string text = ReadLine();
+                VimeoInfo vimeoInfo = null;
+                try
+                {
+                    vimeoInfo = await Vimeo.GetVimeoInfo(text);
+                    WriteLine(vimeoInfo);
+                }
+                catch (VimeoParseException ex) { WriteLine($"parsing err: {ex.Message}"); }
+                catch (Exception ex) { WriteLine($"err: {ex.Message}"); }
 
-            Console.WriteLine($"High Quality: {Environment.NewLine}{profile}");
-            vimeo.DownloadProgress += (sedner, arg) =>
-            { 
-                Console.WriteLine($"{arg.WriteBytes} / {arg.TotalBytes}  ({ (arg.WriteBytes*1.0/arg.TotalBytes)*100 })%)");
-            };
-            await vimeo.Download(Directory.GetCurrentDirectory(), vimeoInfo,VideoQuality.High);
-            (await vimeo.GetThumbnail(vimeoInfo)).Save($"{Directory.GetCurrentDirectory()}\\image.jpg");
-            watch.Stop();
+                if (vimeoInfo!=null)
+                {
+                    string fileName = "";
 
-            System.Console.WriteLine(watch.ElapsedMilliseconds + "ms");
-            Console.ReadKey();
-        }
-         
+                    WriteLine("Thumbnail download? Y/N : ");
+                    text = ReadLine();
+                    bool thumbnailDownload = (text == "Y") ? true : false;
+
+
+                    WriteLine("Type video filename (enter -> default): ");
+                    text = ReadLine();
+                    fileName = text;
+
+                    WriteLine("Select video quality [ H / M / L ] : ");
+                    text = ReadLine();
+                    VideoQuality videoQuality = (text == "H") ? VideoQuality.High : (text == "M") ? VideoQuality.Medium : VideoQuality.Low;
+
+                    WriteLine("Download Start? Y/N :");
+                    text = ReadLine(); 
+                    if (text == "Y")
+                    {
+                        (await vimeo.GetThumbnail(vimeoInfo, ThumbnailQuality.High)).Save($@"{dir}\{vimeoInfo.Title}.jpg");
+
+                        await vimeo.Download(dir, vimeoInfo, videoQuality, (fileName.Length>0)?fileName:vimeoInfo.Title);
+                        WriteLine("Download finished");
+                    }
+
+                }
+            }  
+        } 
     }
 }

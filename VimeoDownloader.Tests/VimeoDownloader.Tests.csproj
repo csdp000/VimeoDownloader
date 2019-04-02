@@ -52,6 +52,7 @@
     <Compile Include="UrlHelperTests.cs" />
     <Compile Include="VimeoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VimeoThumbnailTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

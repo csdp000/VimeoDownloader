@@ -12,26 +12,32 @@ namespace VimeoDownloader.Models
         /// 동영상 다운로드 Url
         /// </summary>
         public string Url { get; set; }
+        
         /// <summary>
         /// 동영상 가로 해상도
         /// </summary>
         public int Width { get; set; }
+        
         /// <summary>
         /// 동영상 세로 해상도
         /// </summary>
         public int Height { get; set; }
+        
         /// <summary>
         /// 동영상 Fps
         /// </summary>
         public int Fps { get; set; }
+       
         /// <summary>
         /// 동영상 Mime Type
         /// </summary>
         public string Mime { get; set; }
+        
         /// <summary>
         /// 동영상 품질
         /// </summary>
         public string Quality { get; set; }
+        
         /// <summary>
         /// 동영상 파일 크기
         /// </summary>

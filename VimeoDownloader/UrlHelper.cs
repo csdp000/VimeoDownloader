@@ -19,6 +19,6 @@ namespace VimeoDownloader
             const string pattern = @"(http|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?"; 
             var regex = new Regex(pattern);
             return regex.Matches(content).Cast<Match>().Select(c => c.Value).ToArray();
-        }
+        } 
     }
 }
