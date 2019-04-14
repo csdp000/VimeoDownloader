@@ -7,34 +7,15 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.IO;
 using System.Drawing;
-using System.Net.Http;
+using System.Net.Http; 
 
 using VimeoDownloader.Models;
 using VimeoDownloader.Exceptions;
 using VimeoDownloader.Enums;  
 namespace VimeoDownloader
 {
-    public class Vimeo
-    {
-        /// <summary>
-        /// 동영상 다운로드 시작 이벤트
-        /// </summary>
-        public event EventHandler DownloadStarted;
-        
-        /// <summary>
-        /// 동영상 다운로드 취소 이벤트
-        /// </summary>
-        public event EventHandler DownloadCancel;
-        
-        /// <summary>
-        /// 동영상 다운로드 완료 이벤트
-        /// </summary>
-        public event EventHandler DownloadFinished;
-        
-        /// <summary>
-        /// 동영상 다운로드 진행 이벤트
-        /// </summary>
-        public event EventHandler<ProgressEventArgs> DownloadProgress; 
+    public class Vimeo : VideoDownloader
+    { 
           
         /// <summary>
         /// 동영상을 다운로드 (파일 이름을 동영상 제목으로 지정)
@@ -64,34 +45,45 @@ namespace VimeoDownloader
         public async Task Download(string path, VimeoInfo vimeoInfo,VideoQuality quality,string fileName)
         {
             if (string.IsNullOrEmpty(path))
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path), " is null");
             if (vimeoInfo == null)
-                throw new ArgumentNullException("vimeoInfo");
+                throw new ArgumentNullException(nameof(vimeoInfo)," is null");
             if (string.IsNullOrEmpty(fileName))
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName), " is null");
 
             string saveFile = $@"{path}\{fileName}{MimeType.GetExtension(vimeoInfo.GetProfile(VideoQuality.High).Mime)}";
 
             var profile = vimeoInfo.GetProfile(quality);
              
-            HttpClient client = new HttpClient(); 
-            var response = await client.GetAsync(profile.Url); 
-            const int bufferSize = 1024;
-            using (var stream = await response.Content.ReadAsStreamAsync())
-            using (var writer = new FileStream(saveFile,FileMode.Create,FileAccess.Write))
+            HttpClient client = new HttpClient();
+            try
             {
+                OnDownloadStarted(null);
 
-                var buffer = new byte[bufferSize];
-                int bytes;
-                long writeBytes = 0;
-                
-                while ((bytes = stream.Read(buffer, 0, bufferSize)) > 0)
+                var response = await client.GetAsync(profile.Url, HttpCompletionOption.ResponseHeadersRead);
+                const int bufferSize = 1024 * 1024;
+
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var writer = new FileStream(saveFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, true))
                 {
-                    writeBytes += bytes; 
-                    writer.Write(buffer, 0, bytes); 
-                    DownloadProgress?.Invoke(this, new ProgressEventArgs(this, writeBytes, profile.Length)); 
+                    var buffer = new byte[bufferSize];
+                    int bytes;
+                    long writeBytes = 0;
+
+                    Console.WriteLine(writer.IsAsync);
+                    while ((bytes = await stream.ReadAsync(buffer, 0, bufferSize)) > 0)
+                    {
+                        writeBytes += bytes;
+
+                        await writer.WriteAsync(buffer, 0, bytes);
+                        OnDownloadProgress(new ProgressEventArgs(this, writeBytes, profile.Length));
+                    }
                 }
-            } 
+            }
+            catch (WebException ex) { throw new VimeoException("Download Exception", ex); }
+
+            OnDownloadFinished(null);
+            
         }
 
         /// <summary>
@@ -110,7 +102,7 @@ namespace VimeoDownloader
         public async Task<Stream> GetStream(VimeoInfo vimeoInfo, VideoQuality quality)
         {
             if (vimeoInfo == null)
-                throw new ArgumentNullException("vimeoInfo");
+                throw new ArgumentNullException(nameof(vimeoInfo),"is null");
 
             var profile = vimeoInfo.GetProfile(quality);
 
@@ -136,7 +128,7 @@ namespace VimeoDownloader
         public async Task<Image> GetThumbnail(VimeoInfo vimeoInfo,ThumbnailQuality quality)
         { 
             if (vimeoInfo == null)
-                throw new ArgumentNullException("vimeoInfo");
+                throw new ArgumentNullException(nameof(vimeoInfo),"is null");
 
             Image image = null;
 
@@ -155,16 +147,16 @@ namespace VimeoDownloader
             } 
             return image;
         }
-
+         
         /// <summary>
         /// 동영상 정보를 구합니다.
         /// </summary>
-        /// <param name="videoId">비메오 동영상 Id</param>
+        /// <param name="vimeoId">비메오 동영상 Id</param>
         /// <returns>VimeoInfo 객체 반환</returns>
-        public static async Task<VimeoInfo> GetVimeoInfo(string videoId)
+        public static async Task<VimeoInfo> GetVimeoInfo(string vimeoId)
         {
-            if (string.IsNullOrEmpty(videoId))
-                throw new ArgumentNullException("videoId");
+            if (string.IsNullOrEmpty(vimeoId))
+                throw new ArgumentNullException(nameof(vimeoId),"is null");
 
             VimeoInfo vimeoInfo = null;
 
@@ -172,7 +164,7 @@ namespace VimeoDownloader
             {
                 using (var request = new HttpClient())
                 { 
-                    var body = await request.GetStringAsync($"https://player.vimeo.com/video/{videoId}/config");
+                    var body = await request.GetStringAsync($"https://player.vimeo.com/video/{vimeoId}/config");
 
                     var jobj = JObject.Parse(body);
 
@@ -205,7 +197,7 @@ namespace VimeoDownloader
             }
             catch(Exception ex)
             {
-                throw new VimeoParseException(videoId, ex);
+                throw new VimeoParseException(vimeoId, ex);
             }
             return vimeoInfo;
         }

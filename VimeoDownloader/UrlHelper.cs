@@ -14,8 +14,11 @@ namespace VimeoDownloader
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public static string[] GetUrlFromString(string content)
+        public static string[] GetUrlsFromString(string content)
         {
+            if (string.IsNullOrEmpty(content))
+                throw new ArgumentNullException(nameof(content), "is null");
+
             const string pattern = @"(http|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?"; 
             var regex = new Regex(pattern);
             return regex.Matches(content).Cast<Match>().Select(c => c.Value).ToArray();

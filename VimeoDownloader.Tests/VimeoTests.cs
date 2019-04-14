@@ -18,31 +18,32 @@ namespace VimeoDownloader.Tests
         }
         [TestMethod()]
         public  void GetVideoInfo_ReturnVideoMetaData()
-        { 
+        {  
             Assert.AreNotEqual(0, videoInfo.Id);
-            Assert.AreNotEqual(0, videoInfo.Thumbnail.Length);
+            Assert.AreNotEqual(0, videoInfo.Thumbnail.Length);  
             Assert.AreNotEqual(0, videoInfo.Profiles.Length);
         } 
         [TestMethod()]
         public void GetProfile_Return1080pProfile()
         {
             var downloader = new Vimeo(); 
-            var profile = videoInfo.GetProfile(Enums.VideoQuality.High);
-            Assert.AreEqual("1080p", profile.Quality); 
+            var actual = videoInfo.GetProfile(Enums.VideoQuality.High).Quality;
+            Assert.AreEqual("1080p", actual); 
         }
         [TestMethod()]
         public void GetProfile_Return720pProfile()
         {
             var downloader = new Vimeo(); 
-            var profile = videoInfo.GetProfile(Enums.VideoQuality.Medium);
-            Assert.AreEqual("720p", profile.Quality);
+            var actual = videoInfo.GetProfile(Enums.VideoQuality.Medium).Quality;
+
+            Assert.AreEqual("720p", actual);
         }
         [TestMethod()]
         public void GetProfile_Return360pProfile()
         {
-            var downloader = new Vimeo(); 
-            var profile = videoInfo.GetProfile(Enums.VideoQuality.Low);
-            Assert.AreEqual("360p", profile.Quality);
+            var downloader = new Vimeo();
+            var actual = videoInfo.GetProfile(Enums.VideoQuality.Low).Quality;
+            Assert.AreEqual("360p", actual);
         }
     }
 }

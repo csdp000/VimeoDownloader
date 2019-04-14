@@ -698,10 +698,8 @@ namespace VimeoDownloader
 
         public static string GetMimeType(string extension)
         {
-            if (extension == null)
-            {
-                throw new ArgumentNullException("extension");
-            }
+            if (string.IsNullOrEmpty(extension))
+                throw new ArgumentNullException(nameof(extension), "is null");
 
             if (!extension.StartsWith("."))
             {
@@ -714,10 +712,9 @@ namespace VimeoDownloader
         } 
         public static string GetExtension(string mimeType)
         {
-            if (mimeType == null)
-            {
-                throw new ArgumentNullException("mimeType");
-            }  
+            if (string.IsNullOrEmpty(mimeType))
+                throw new ArgumentNullException(nameof(mimeType),"is null"); 
+
             string extension;
 
             if (_mappings.Value.TryGetValue(mimeType, out extension))
@@ -729,6 +726,10 @@ namespace VimeoDownloader
         } 
         public static string MakeValidFileName(string filename)
         {
+            if (string.IsNullOrEmpty(filename))
+                throw new ArgumentNullException(nameof(filename), "is null");
+
+
             var regex = new System.Text.RegularExpressions.Regex(@"[\\\/:*?""<>|]");
             return regex.Replace(filename, ""); 
         }
