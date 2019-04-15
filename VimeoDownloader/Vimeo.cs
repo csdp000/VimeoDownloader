@@ -37,7 +37,7 @@ namespace VimeoDownloader
         /// <summary>
         /// 동영상을 다운로드
         /// </summary>
-        /// <param name="path">파일이 저장될 경로</param>
+        /// <param name="path">파일이 저장될 경로</param>a
         /// <param name="vimeoInfo">VimeoInfo 객체</param>
         /// <param name="quality">동영상 품질</param>
         /// <param name="fileName">확장자를 제외한 파일이름</param>
@@ -58,7 +58,7 @@ namespace VimeoDownloader
             HttpClient client = new HttpClient();
             try
             {
-                OnDownloadStarted(null);
+                OnDownloadStarted(new VideoContextEventArgs(vimeoInfo));
 
                 var response = await client.GetAsync(profile.Url, HttpCompletionOption.ResponseHeadersRead);
                 const int bufferSize = 1024 * 1024;
@@ -70,19 +70,19 @@ namespace VimeoDownloader
                     int bytes;
                     long writeBytes = 0;
 
-                    Console.WriteLine(writer.IsAsync);
+                    //Console.WriteLine(writer.IsAsync);
                     while ((bytes = await stream.ReadAsync(buffer, 0, bufferSize)) > 0)
                     {
                         writeBytes += bytes;
 
                         await writer.WriteAsync(buffer, 0, bytes);
-                        OnDownloadProgress(new ProgressEventArgs(this, writeBytes, profile.Length));
+                        OnDownloadProgress(new ProgressEventArgs( writeBytes, profile.Length));
                     }
                 }
             }
             catch (WebException ex) { throw new VimeoException("Download Exception", ex); }
 
-            OnDownloadFinished(null);
+            OnDownloadFinished(new VideoContextEventArgs(vimeoInfo));
             
         }
 
@@ -163,7 +163,8 @@ namespace VimeoDownloader
             try
             {
                 using (var request = new HttpClient())
-                { 
+                {
+                    request.DefaultRequestHeaders.Referrer = new Uri("http://cafe.naver.com");
                     var body = await request.GetStringAsync($"https://player.vimeo.com/video/{vimeoId}/config");
 
                     var jobj = JObject.Parse(body);

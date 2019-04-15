@@ -14,7 +14,7 @@ namespace VimeoDownloader
         public long WriteBytes { get; private set; }
         public long TotalBytes { get; private set; }
          
-        public ProgressEventArgs(object sender, long writeBytes, long totalBytes): base()
+        public ProgressEventArgs( long writeBytes, long totalBytes): base()
         {
             WriteBytes = writeBytes;
             TotalBytes = totalBytes;
